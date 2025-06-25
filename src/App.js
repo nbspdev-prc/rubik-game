@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Cube from './components/Cube';
 import './App.css';
 
@@ -13,6 +13,38 @@ function App() {
 			cubeRef.current.rotateFace(move);
 		}
 	};
+  
+  const [time, setTime] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+
+  useEffect(() => {
+    let timer;
+    if (isRunning) {
+      timer = setInterval(() => {
+        setTime((prevTime) => prevTime + 10);
+      }, 10);
+    } else {
+      clearInterval(timer);
+    }
+    return () => clearInterval(timer);
+  }, [isRunning]);
+
+
+  function formatTime(ms) {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    const milliseconds = Math.floor((ms % 1000) / 10); 
+
+    const paddedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+    const paddedMilliseconds = milliseconds < 10 ? `0${milliseconds}` : milliseconds;
+
+    return `${minutes}:${paddedSeconds}.${paddedMilliseconds}`;
+  }
+
+  function resetTimer() {
+    setTime(0);
+    setIsRunning(false);
+  }
 
 	const shuffleCube = () => {
 		const randomMoves = [];
@@ -64,9 +96,9 @@ function App() {
 
 	return (
 		<div className="app-container">
-			<h1 className="title">0:00</h1>
+			<h1 className="title">{formatTime(time)}</h1>
 			<div className="button-panel" style={{ position: 'absolute', zIndex: 1, top: 10, left: 10 }}>
-				{moves.map((move) => (
+				{/* {moves.map((move) => (
 					<button
 						key={move}
 						ref={(el) => (buttonRefs.current[move] = el)}
@@ -74,8 +106,10 @@ function App() {
 					>
 						{move}
 					</button>
-				))}
+				))} */}
 				<button onClick={shuffleCube}>Shuffle</button>
+        <button onClick={() => setIsRunning(!isRunning)}> Start Timer </button>
+        <button onClick={resetTimer}> Reset Timer </button>
 				<div className="guide">
 					<h3>Keyboard Controls</h3>
 					<ul>

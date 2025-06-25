@@ -64,7 +64,7 @@ function App() {
 
 	return (
 		<div className="app-container">
-			<h1 className="title">THE CUBE</h1>
+			<h1 className="title">0:00</h1>
 			<div className="button-panel" style={{ position: 'absolute', zIndex: 1, top: 10, left: 10 }}>
 				{moves.map((move) => (
 					<button

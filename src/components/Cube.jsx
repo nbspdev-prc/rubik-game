@@ -19,6 +19,7 @@ const Cube = forwardRef((props, ref) => {
 		const width = element.clientWidth;
 		const height = element.clientHeight;
 
+        // Prepare scene, camera, and renderer
 		sceneRef.current = new THREE.Scene();
 		const scene = sceneRef.current;
 		const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
@@ -27,9 +28,9 @@ const Cube = forwardRef((props, ref) => {
 		renderer.setSize(width, height);
 		element.appendChild(renderer.domElement);
 
+        // Cameara setup
 		camera.position.set(-20, 20, 30);
 		camera.lookAt(scene.position);
-
 		const controls = new OrbitControls(camera, renderer.domElement);
 		controls.enableZoom = false;
 		controls.enablePan = false;
@@ -38,6 +39,7 @@ const Cube = forwardRef((props, ref) => {
 		light.position.set(20, 20, 20);
 		scene.add(light);
 
+        // Create cubes
 		const cubeSize = 3;
 		const spacing = 0.25;
 		const increment = cubeSize + spacing;
@@ -52,8 +54,10 @@ const Cube = forwardRef((props, ref) => {
 
 					const orange = i === dimensions - 1;
 					const red = i === 0;
+
 					const white = j === dimensions - 1;
 					const yellow = j === 0;
+
 					const blue = k === dimensions - 1;
 					const green = k === 0;
 
@@ -78,6 +82,7 @@ const Cube = forwardRef((props, ref) => {
 			}
 		}
 
+        // Add axes rotation for cube
 		const animate = () => {
 			controls.update();
 			renderer.render(scene, camera);
@@ -90,6 +95,7 @@ const Cube = forwardRef((props, ref) => {
 		};
 	}, []);
 
+    // Rotate face functions mapping
 	const rotateFaceInternal = (move) => {
 		const axisMap = {
 			R: { axis: 'x', val: 1 },
@@ -117,7 +123,7 @@ const Cube = forwardRef((props, ref) => {
 
 		gsap.to(group.rotation, {
 			[axis]: group.rotation[axis] + angle,
-			duration: 0.3,
+			duration: 0,
 			ease: "power1.inOut",
 			onComplete: () => {
 				group.rotation[axis] = Math.round(group.rotation[axis] / (Math.PI / 2)) * (Math.PI / 2);

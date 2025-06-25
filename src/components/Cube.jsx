@@ -2,7 +2,6 @@ import React, { useEffect, useImperativeHandle, forwardRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
-import gsap from 'gsap';
 
 const Cube = forwardRef((props, ref) => {
 	const mountRef = React.useRef();
@@ -11,7 +10,58 @@ const Cube = forwardRef((props, ref) => {
 	const sceneRef = React.useRef();
 	const isRotatingRef = React.useRef(false);
 	const moveQueueRef = React.useRef([]);
+	const rotationStateRef = React.useRef(null);
 
+	const rotateFaceInternal = (move) => {
+		const axisMap = {
+			R: { axis: 'x', val: 1 },
+			L: { axis: 'x', val: -1 },
+			U: { axis: 'y', val: 1 },
+			D: { axis: 'y', val: -1 },
+			F: { axis: 'z', val: 1 },
+			B: { axis: 'z', val: -1 },
+		};
+
+		const prime = move.includes("'");
+		const baseMove = move.replace("'", "");
+		const { axis, val } = axisMap[baseMove];
+
+		const slice = cubeGroupRef.current.filter((cube) => {
+			const rounded = Math.round(cube.position[axis] * 2) / 2;
+			return val === 1 ? rounded > 1 : rounded < -1;
+		});
+
+		if (slice.length === 0) return;
+
+		const group = new THREE.Group();
+		sceneRef.current.add(group);
+		slice.forEach((cube) => group.attach(cube));
+
+		const direction = prime ? -1 : 1;
+		const targetAngle = (Math.PI / 2) * direction;
+
+		rotationStateRef.current = {
+			group,
+			axis,
+			targetAngle,
+			currentAngle: 0,
+			speed: 0.1,
+			slice,
+		};
+	};
+
+	useImperativeHandle(ref, () => ({
+		rotateFace: (move) => {
+			if (isRotatingRef.current || rotationStateRef.current) {
+				moveQueueRef.current.push(move);
+			} else {
+				isRotatingRef.current = true;
+				rotateFaceInternal(move);
+			}
+		},
+	}));
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => {
 		const element = mountRef.current;
 		const dimensions = 3;
@@ -19,16 +69,15 @@ const Cube = forwardRef((props, ref) => {
 		const width = element.clientWidth;
 		const height = element.clientHeight;
 
-        // Prepare scene, camera, and renderer
 		sceneRef.current = new THREE.Scene();
 		const scene = sceneRef.current;
+
 		const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
 		const renderer = new THREE.WebGLRenderer({ antialias: true });
 		renderer.setClearColor(background, 1.0);
 		renderer.setSize(width, height);
 		element.appendChild(renderer.domElement);
 
-        // Cameara setup
 		camera.position.set(-20, 20, 30);
 		camera.lookAt(scene.position);
 		const controls = new OrbitControls(camera, renderer.domElement);
@@ -39,25 +88,23 @@ const Cube = forwardRef((props, ref) => {
 		light.position.set(20, 20, 20);
 		scene.add(light);
 
-        // Create cubes
+		// Create cubes
 		const cubeSize = 3;
 		const spacing = 0.25;
 		const increment = cubeSize + spacing;
-		const positionOffset = (dimensions - 1) / 2;
+		const offset = (dimensions - 1) / 2;
 
 		for (let i = 0; i < dimensions; i++) {
 			for (let j = 0; j < dimensions; j++) {
 				for (let k = 0; k < dimensions; k++) {
-					const x = (i - positionOffset) * increment;
-					const y = (j - positionOffset) * increment;
-					const z = (k - positionOffset) * increment;
+					const x = (i - offset) * increment;
+					const y = (j - offset) * increment;
+					const z = (k - offset) * increment;
 
 					const orange = i === dimensions - 1;
 					const red = i === 0;
-
 					const white = j === dimensions - 1;
 					const yellow = j === 0;
-
 					const blue = k === dimensions - 1;
 					const green = k === 0;
 
@@ -82,8 +129,34 @@ const Cube = forwardRef((props, ref) => {
 			}
 		}
 
-        // Add axes rotation for cube
+		const updateRotationFrame = () => {
+			const r = rotationStateRef.current;
+			if (!r) return;
+
+			const delta = r.speed;
+			const remaining = r.targetAngle - r.currentAngle;
+			const step = Math.abs(remaining) < delta ? remaining : Math.sign(remaining) * delta;
+
+			r.group.rotation[r.axis] += step;
+			r.currentAngle += step;
+
+			if (Math.abs(r.currentAngle - r.targetAngle) < 0.001) {
+				r.group.rotation[r.axis] = Math.round(r.group.rotation[r.axis] / (Math.PI / 2)) * (Math.PI / 2);
+				r.slice.forEach(cube => sceneRef.current.attach(cube));
+				sceneRef.current.remove(r.group);
+				rotationStateRef.current = null;
+				isRotatingRef.current = false;
+
+				if (moveQueueRef.current.length > 0) {
+					const nextMove = moveQueueRef.current.shift();
+					isRotatingRef.current = true;
+					rotateFaceInternal(nextMove);
+				}
+			}
+		};
+
 		const animate = () => {
+			if (rotationStateRef.current) updateRotationFrame();
 			controls.update();
 			renderer.render(scene, camera);
 			requestAnimationFrame(animate);
@@ -94,59 +167,6 @@ const Cube = forwardRef((props, ref) => {
 			element.removeChild(renderer.domElement);
 		};
 	}, []);
-
-    // Rotate face functions mapping
-	const rotateFaceInternal = (move) => {
-		const axisMap = {
-			R: { axis: 'x', val: 1 },
-			L: { axis: 'x', val: -1 },
-			U: { axis: 'y', val: 1 },
-			D: { axis: 'y', val: -1 },
-			F: { axis: 'z', val: 1 },
-			B: { axis: 'z', val: -1 },
-		};
-
-		const prime = move.includes("'");
-		const baseMove = move.replace("'", "");
-		const { axis, val } = axisMap[baseMove];
-
-		const slice = cubeGroupRef.current.filter((cube) => {
-			const rounded = Math.round(cube.position[axis] * 2) / 2;
-			return val === 1 ? rounded > 1 : rounded < -1;
-		});
-
-		const group = new THREE.Group();
-		sceneRef.current.add(group);
-		slice.forEach((cube) => group.attach(cube));
-
-		const angle = (prime ? -1 : 1) * Math.PI / 2;
-
-		gsap.to(group.rotation, {
-			[axis]: group.rotation[axis] + angle,
-			duration: 0,
-			ease: "power1.inOut",
-			onComplete: () => {
-				group.rotation[axis] = Math.round(group.rotation[axis] / (Math.PI / 2)) * (Math.PI / 2);
-				slice.forEach((cube) => sceneRef.current.attach(cube));
-				sceneRef.current.remove(group);
-				isRotatingRef.current = false;
-				if (moveQueueRef.current.length > 0) {
-					rotateFaceInternal(moveQueueRef.current.shift());
-				}
-			},
-		});
-	};
-
-	useImperativeHandle(ref, () => ({
-		rotateFace: (move) => {
-			if (isRotatingRef.current) {
-				moveQueueRef.current.push(move);
-			} else {
-				isRotatingRef.current = true;
-				rotateFaceInternal(move);
-			}
-		},
-	}));
 
 	return <div ref={mountRef} style={{ width: '100%', height: '100vh' }} />;
 });

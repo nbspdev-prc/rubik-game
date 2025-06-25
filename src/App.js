@@ -13,38 +13,37 @@ function App() {
 			cubeRef.current.rotateFace(move);
 		}
 	};
-  
-  const [time, setTime] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
 
-  useEffect(() => {
-    let timer;
-    if (isRunning) {
-      timer = setInterval(() => {
-        setTime((prevTime) => prevTime + 10);
-      }, 10);
-    } else {
-      clearInterval(timer);
-    }
-    return () => clearInterval(timer);
-  }, [isRunning]);
+	const [time, setTime] = useState(0);
+	const [isRunning, setIsRunning] = useState(false);
 
+	useEffect(() => {
+		let timer;
+		if (isRunning) {
+			timer = setInterval(() => {
+				setTime((prevTime) => prevTime + 10);
+			}, 10);
+		} else {
+			clearInterval(timer);
+		}
+		return () => clearInterval(timer);
+	}, [isRunning]);
 
-  function formatTime(ms) {
-    const minutes = Math.floor(ms / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000);
-    const milliseconds = Math.floor((ms % 1000) / 10); 
+	function formatTime(ms) {
+		const minutes = Math.floor(ms / 60000);
+		const seconds = Math.floor((ms % 60000) / 1000);
+		const milliseconds = Math.floor((ms % 1000) / 10);
 
-    const paddedSeconds = seconds < 10 ? `0${seconds}` : seconds;
-    const paddedMilliseconds = milliseconds < 10 ? `0${milliseconds}` : milliseconds;
+		const paddedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+		const paddedMilliseconds = milliseconds < 10 ? `0${milliseconds}` : milliseconds;
 
-    return `${minutes}:${paddedSeconds}.${paddedMilliseconds}`;
-  }
+		return `${minutes}:${paddedSeconds}.${paddedMilliseconds}`;
+	}
 
-  function resetTimer() {
-    setTime(0);
-    setIsRunning(false);
-  }
+	function resetTimer() {
+		setTime(0);
+		setIsRunning(false);
+	}
 
 	const shuffleCube = () => {
 		const randomMoves = [];
@@ -60,45 +59,45 @@ function App() {
 		});
 	};
 
-  useEffect(() => {
-    const keyMap = {
-      Q: 'R',
-      P: "R'",
-      W: 'L',
-      O: "L'",
-      E: 'U',
-      I: "U'",
-      R: 'D',
-      U: "D'",
-      F: 'F',
-      J: "F'",
-      G: 'B',
-      H: "B'",
-    };
+	useEffect(() => {
+		const keyMap = {
+			Q: 'R',
+			P: "R'",
+			W: 'L',
+			O: "L'",
+			E: 'U',
+			I: "U'",
+			R: 'D',
+			U: "D'",
+			F: 'F',
+			J: "F'",
+			G: 'B',
+			H: "B'",
+		};
 
-    const handleKeyDown = (e) => {
-      const move = keyMap[e.key.toUpperCase()];
-      if (move) {
-        e.preventDefault();
-        handleMove(move);
+		const handleKeyDown = (e) => {
+			const move = keyMap[e.key.toUpperCase()];
+			if (move) {
+				e.preventDefault();
+				handleMove(move);
 
-        const btn = buttonRefs.current[move];
-        if (btn) {
-          btn.classList.add('pressed');
-          setTimeout(() => btn.classList.remove('pressed'), 150);
-        }
-      }
-    };
+				const btn = buttonRefs.current[move];
+				if (btn) {
+					btn.classList.add('pressed');
+					setTimeout(() => btn.classList.remove('pressed'), 150);
+				}
+			}
+		};
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, []);
 
 	return (
 		<div className="app-container">
 			<h1 className="title">{formatTime(time)}</h1>
 			<div className="button-panel" style={{ position: 'absolute', zIndex: 1, top: 10, left: 10 }}>
-				{/* {moves.map((move) => (
+				{moves.map((move) => (
 					<button
 						key={move}
 						ref={(el) => (buttonRefs.current[move] = el)}
@@ -106,10 +105,10 @@ function App() {
 					>
 						{move}
 					</button>
-				))} */}
+				))}
 				<button onClick={shuffleCube}>Shuffle</button>
-        <button onClick={() => setIsRunning(!isRunning)}> Start Timer </button>
-        <button onClick={resetTimer}> Reset Timer </button>
+				<button onClick={() => setIsRunning(!isRunning)}>Start Timer</button>
+				<button onClick={resetTimer}>Reset Timer</button>
 				<div className="guide">
 					<h3>Keyboard Controls</h3>
 					<ul>
@@ -120,7 +119,7 @@ function App() {
 						<li>F: F</li>
 						<li>G: B</li>
 					</ul>
-					<div> &nbsp;</div>
+					<div>&nbsp;</div>
 					<ul>
 						<li>P: R'</li>
 						<li>O: L'</li>

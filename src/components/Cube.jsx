@@ -51,36 +51,26 @@ const Cube = forwardRef((props, ref) => {
 	};
 
 	const isCubeSolved = () => {
-        const faceIndices = {
-            R: 0, // right
-            L: 1, // left 
-            U: 2, // top 
-            D: 3, // bottom 
-            F: 4, // front 
-            B: 5, // back 
-        };
-
-        const faceConditions = [
-            { axis: 'x', value: 3, face: faceIndices.R },
-            { axis: 'x', value: -3, face: faceIndices.L },
-            { axis: 'y', value: 3, face: faceIndices.U },
-            { axis: 'y', value: -3, face: faceIndices.D },
-            { axis: 'z', value: 3, face: faceIndices.F },
-            { axis: 'z', value: -3, face: faceIndices.B },
+        const faces = [
+            { axis: 'x', value: 3, faceIndex: 0 }, // Right
+            { axis: 'x', value: -3, faceIndex: 1 }, // Left
+            { axis: 'y', value: 3, faceIndex: 2 }, // Top
+            { axis: 'y', value: -3, faceIndex: 3 }, // Bottom
+            { axis: 'z', value: 3, faceIndex: 4 }, // Front
+            { axis: 'z', value: -3, faceIndex: 5 }, // Back
         ];
 
-        for (const { axis, value, face } of faceConditions) {
+        for (const { axis, value, faceIndex } of faces) {
             const faceCubes = cubeGroupRef.current.filter(
                 (cube) => Math.round(cube.position[axis]) === value
             );
-            const refColor = faceCubes[0].material[face].color.getHex();
+            const color = faceCubes[0].material[faceIndex].color.getHex();
 
-            for (const cube of faceCubes) {
-                if (cube.material[face].color.getHex() !== refColor) {
-                    return false;
-                }
+            if (!faceCubes.every(cube => cube.material[faceIndex].color.getHex() === color)) {
+                return false;
             }
         }
+
         return true;
     };
 

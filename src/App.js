@@ -97,7 +97,7 @@ function App() {
 		<div className="app-container">
 			<h1 className="title">{formatTime(time)}</h1>
 			<div className="button-panel" style={{ position: 'absolute', zIndex: 1, top: 10, left: 10 }}>
-				{moves.map((move) => (
+				{/* {moves.map((move) => (
 					<button
 						key={move}
 						ref={(el) => (buttonRefs.current[move] = el)}
@@ -105,10 +105,19 @@ function App() {
 					>
 						{move}
 					</button>
-				))}
+				))} */}
 				<button onClick={shuffleCube}>Shuffle</button>
 				<button onClick={() => setIsRunning(!isRunning)}>Start Timer</button>
 				<button onClick={resetTimer}>Reset Timer</button>
+        <button onClick={() => {
+            if (cubeRef.current?.isCubeSolved()) {
+              alert('✅ Cube is solved!');
+            } else {
+              alert('❌ Cube is NOT solved.');
+            }
+          }}>
+            Check Cube
+        </button>
 				<div className="guide">
 					<h3>Keyboard Controls</h3>
 					<ul>

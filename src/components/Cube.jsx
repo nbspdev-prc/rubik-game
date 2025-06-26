@@ -50,6 +50,40 @@ const Cube = forwardRef((props, ref) => {
 		};
 	};
 
+	const isCubeSolved = () => {
+        const faceIndices = {
+            R: 0, // right
+            L: 1, // left 
+            U: 2, // top 
+            D: 3, // bottom 
+            F: 4, // front 
+            B: 5, // back 
+        };
+
+        const faceConditions = [
+            { axis: 'x', value: 3, face: faceIndices.R },
+            { axis: 'x', value: -3, face: faceIndices.L },
+            { axis: 'y', value: 3, face: faceIndices.U },
+            { axis: 'y', value: -3, face: faceIndices.D },
+            { axis: 'z', value: 3, face: faceIndices.F },
+            { axis: 'z', value: -3, face: faceIndices.B },
+        ];
+
+        for (const { axis, value, face } of faceConditions) {
+            const faceCubes = cubeGroupRef.current.filter(
+                (cube) => Math.round(cube.position[axis]) === value
+            );
+            const refColor = faceCubes[0].material[face].color.getHex();
+
+            for (const cube of faceCubes) {
+                if (cube.material[face].color.getHex() !== refColor) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
 	useImperativeHandle(ref, () => ({
 		rotateFace: (move) => {
 			if (isRotatingRef.current || rotationStateRef.current) {
@@ -59,6 +93,7 @@ const Cube = forwardRef((props, ref) => {
 				rotateFaceInternal(move);
 			}
 		},
+		isCubeSolved,
 	}));
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,12 +144,12 @@ const Cube = forwardRef((props, ref) => {
 					const green = k === 0;
 
 					const materials = [
-						new THREE.MeshToonMaterial({ color: orange ? 0xf54118 : 0x000000 }),
-						new THREE.MeshToonMaterial({ color: red ? 0xd1112e : 0x000000 }),
-						new THREE.MeshToonMaterial({ color: white ? 0xffffff : 0x000000 }),
-						new THREE.MeshToonMaterial({ color: yellow ? 0xffc824 : 0x000000 }),
-						new THREE.MeshToonMaterial({ color: blue ? 0x303af0 : 0x000000 }),
-						new THREE.MeshToonMaterial({ color: green ? 0x08d108 : 0x000000 }),
+						new THREE.MeshToonMaterial({ color: orange ? 0xf54118 : 0x000000 }), // Right
+						new THREE.MeshToonMaterial({ color: red ? 0xd1112e : 0x000000 }),   // Left
+						new THREE.MeshToonMaterial({ color: white ? 0xffffff : 0x000000 }), // Top
+						new THREE.MeshToonMaterial({ color: yellow ? 0xffc824 : 0x000000 }), // Bottom
+						new THREE.MeshToonMaterial({ color: blue ? 0x303af0 : 0x000000 }),   // Front
+						new THREE.MeshToonMaterial({ color: green ? 0x08d108 : 0x000000 }),  // Back
 					];
 
 					const geometry = new RoundedBoxGeometry(cubeSize, cubeSize, cubeSize, 2, 0.5);

@@ -109,6 +109,7 @@ function App() {
 				<button onClick={shuffleCube}>Shuffle</button>
 				<button onClick={() => setIsRunning(!isRunning)}>Start Timer</button>
 				<button onClick={resetTimer}>Reset Timer</button>
+        <button onClick={() => cubeRef.current?.resetCube()}> Reset Cube</button>
         <button onClick={() => {
             if (cubeRef.current?.isCubeSolved()) {
               alert('✅ Cube is solved!');

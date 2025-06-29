@@ -162,7 +162,9 @@ const Cube = forwardRef((props, ref) => {
 		camera.position.set(-20, 20, 30);
 		camera.lookAt(scene.position);
 
-		new OrbitControls(camera, renderer.domElement);
+		const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableZoom = false;
+        controls.enablePan = false;
 
 		const light = new THREE.DirectionalLight(0xffffff, 1.5);
 		light.position.set(20, 20, 20);

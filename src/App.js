@@ -46,18 +46,16 @@ function App() {
 	}
 
 	const shuffleCube = () => {
-		const randomMoves = [];
-		const totalMoves = 20;
-		for (let i = 0; i < totalMoves; i++) {
-			const move = moves[Math.floor(Math.random() * moves.length)];
-			randomMoves.push(move);
-		}
-		randomMoves.forEach((move, index) => {
-			setTimeout(() => {
-				handleMove(move);
-			}, index * 500);
-		});
-	};
+    const randomMoves = [];
+    const totalMoves = 20;
+    for (let i = 0; i < totalMoves; i++) {
+      const move = moves[Math.floor(Math.random() * moves.length)];
+      randomMoves.push(move);
+    }
+    randomMoves.forEach((move) => {
+      handleMove(move); // Immediately execute the move
+    });
+  };
 
 	useEffect(() => {
 		const keyMap = {

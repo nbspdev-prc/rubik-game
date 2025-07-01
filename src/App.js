@@ -15,7 +15,8 @@ function App() {
   const cubeRef = useRef();
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(false); // user started solving
+  const [shuffleFinished, setShuffleFinished] = useState(false); // shuffle complete
   const [controlsEnabled, setControlsEnabled] = useState(true);
   const [isSolved, setIsSolved] = useState(null);
   const [keybinds, setKeybinds] = useState(() => {
@@ -29,8 +30,6 @@ function App() {
       timer = setInterval(() => {
         setTime((prev) => prev + 10);
       }, 10);
-    } else if (timer) {
-      clearInterval(timer);
     }
     return () => clearInterval(timer);
   }, [isRunning]);
@@ -44,16 +43,25 @@ function App() {
 
   const shuffleCube = () => {
     setIsSolved(null);
+    setStarted(false);
+    setShuffleFinished(false);
+    setControlsEnabled(false);
+    setTime(0);
+    setIsRunning(false);
+
     const moves = Object.values(DEFAULT_KEYBINDS);
     const randomMoves = Array.from({ length: 20 }, () => moves[Math.floor(Math.random() * moves.length)]);
+
     randomMoves.forEach((move, i) => {
       setTimeout(() => {
-        if (!started) {
-          setIsRunning(true);
-          setStarted(true);
-        }
-        if (controlsEnabled && cubeRef.current) {
+        if (cubeRef.current) {
           cubeRef.current.rotateFace(move);
+        }
+        if (i === randomMoves.length - 1) {
+          setTimeout(() => {
+            setControlsEnabled(true);
+            setShuffleFinished(true);
+          }, 300);
         }
       }, i * 300);
     });
@@ -64,9 +72,11 @@ function App() {
   };
 
   const resetTimer = () => {
+    stopTimer();
     setTime(0);
     setIsRunning(false);
     setStarted(false);
+    setShuffleFinished(false);
     setIsSolved(null);
   };
 
@@ -85,11 +95,11 @@ function App() {
       const move = keybinds[e.key.toUpperCase()];
       if (move) {
         e.preventDefault();
-        if (!started) {
-          setIsRunning(true);
-          setStarted(true);
-        }
         if (controlsEnabled && cubeRef.current) {
+          if (shuffleFinished && !started) {
+            setStarted(true);
+            setIsRunning(true);
+          }
           cubeRef.current.rotateFace(move);
         }
       }
@@ -97,7 +107,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [keybinds, started, controlsEnabled]);
+  }, [keybinds, controlsEnabled, shuffleFinished, started]);
 
   const handleKeybindChange = (key, newMove) => {
     const updated = { ...keybinds, [key]: newMove };

@@ -18,6 +18,8 @@ const Cube = forwardRef((props, ref) => {
 	const sceneRef = useRef();
 	const moveQueueRef = useRef([]);
 	const rotationStateRef = useRef(null);
+	const controlsRef = useRef();
+	const onMoveCallbackRef = useRef();
 
 	const rotateFaceInternal = (move) => {
 		const moves = {
@@ -54,6 +56,10 @@ const Cube = forwardRef((props, ref) => {
 			speed: 0.1,
 			slice,
 		};
+
+		if (onMoveCallbackRef.current) {
+			onMoveCallbackRef.current(move);
+		}
 	};
 
 	const isCubeSolved = () => {
@@ -143,6 +149,12 @@ const Cube = forwardRef((props, ref) => {
 		},
 		isCubeSolved,
 		resetCube,
+		setControlsEnabled: (enabled) => {
+			if (controlsRef.current) controlsRef.current.enabled = enabled;
+		},
+		onMove: (fn) => {
+			onMoveCallbackRef.current = fn;
+		},
 	}));
 
 	useEffect(() => {
@@ -155,7 +167,7 @@ const Cube = forwardRef((props, ref) => {
 
 		const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
 		const renderer = new THREE.WebGLRenderer({ antialias: true });
-		renderer.setClearColor(0x1a1d2b, 1.0);
+		renderer.setClearColor(0xa7d1b2, 1.0);
 		renderer.setSize(width, height);
 		element.appendChild(renderer.domElement);
 
@@ -163,14 +175,16 @@ const Cube = forwardRef((props, ref) => {
 		camera.lookAt(scene.position);
 
 		const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableZoom = false;
-        controls.enablePan = false;
+		controls.enableZoom = false;
+		controls.enablePan = false;
+		controls.enabled = true;
+		controlsRef.current = controls;
 
 		const light = new THREE.DirectionalLight(0xffffff, 1.5);
 		light.position.set(20, 20, 20);
 		scene.add(light);
 
-		createCube(); 
+		createCube();
 
 		let animationId;
 

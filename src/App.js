@@ -15,8 +15,8 @@ function App() {
   const cubeRef = useRef();
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [started, setStarted] = useState(false); // user started solving
-  const [shuffleFinished, setShuffleFinished] = useState(false); // shuffle complete
+  const [started, setStarted] = useState(false);
+  const [shuffleFinished, setShuffleFinished] = useState(false);
   const [controlsEnabled, setControlsEnabled] = useState(true);
   const [isSolved, setIsSolved] = useState(null);
   const [keybinds, setKeybinds] = useState(() => {
@@ -117,26 +117,13 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1 className="title">{formatTime(time)}</h1>
       {isSolved !== null && (
-        <div style={{
-          position: 'absolute',
-          top: '80px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          fontSize: '2rem',
-          color: isSolved ? '#32ff7e' : '#ff4f4f',
-          fontWeight: 'bold',
-          background: '#1a1d2bcc',
-          padding: '10px 20px',
-          borderRadius: '8px',
-          zIndex: 2
-        }}>
+        <div className="status">
           {isSolved ? '✅ Solved!' : '❌ Not solved yet'}
         </div>
       )}
-
       <div className="button-panel">
+        <div className="title">{formatTime(time)}</div>
         <div className="button-row">
           <button onClick={shuffleCube}>Start</button>
           <button onClick={stopTimer}>Stop</button>

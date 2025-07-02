@@ -129,7 +129,7 @@ function App() {
           <button onClick={stopTimer}>Stop</button>
           <button onClick={resetTimer}>Reset</button>
           <button onClick={() => cubeRef.current?.resetCube()}>Reset Cube</button>
-          <button onClick={handleCheckSolved}>Check Cube</button>
+          {/* <button onClick={handleCheckSolved}>Check Cube</button> */}
           <button onClick={() => setControlsEnabled((e) => !e)}>
             {controlsEnabled ? 'Disable Controls' : 'Enable Controls'}
           </button>

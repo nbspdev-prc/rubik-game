@@ -19,6 +19,7 @@ function App() {
   const [shuffleFinished, setShuffleFinished] = useState(false);
   const [controlsEnabled, setControlsEnabled] = useState(true);
   const [isSolved, setIsSolved] = useState(null);
+  const [solveMode, setSolveMode] = useState(false);
   const [keybinds, setKeybinds] = useState(() => {
     const saved = localStorage.getItem('keybinds');
     return saved ? JSON.parse(saved) : DEFAULT_KEYBINDS;
@@ -41,13 +42,26 @@ function App() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
   };
 
-  const shuffleCube = () => {
-    setIsSolved(null);
-    setStarted(false);
-    setShuffleFinished(false);
-    setControlsEnabled(false);
+  const resetState = () => {
     setTime(0);
     setIsRunning(false);
+    setStarted(false);
+    setShuffleFinished(false);
+    setIsSolved(null);
+    setSolveMode(false);
+  };
+
+  const startTimer = () => {
+    if (!isRunning) {
+      setIsRunning(true);
+      setStarted(true);
+      setSolveMode(true);
+    }
+  };
+
+  const shuffleCube = () => {
+    resetState();
+    setControlsEnabled(false);
 
     const moves = Object.values(DEFAULT_KEYBINDS);
     const randomMoves = Array.from({ length: 20 }, () => moves[Math.floor(Math.random() * moves.length)]);
@@ -73,14 +87,12 @@ function App() {
 
   const resetTimer = () => {
     stopTimer();
-    setTime(0);
-    setIsRunning(false);
-    setStarted(false);
-    setShuffleFinished(false);
-    setIsSolved(null);
+    resetState();
   };
 
   const handleCheckSolved = () => {
+    if (!solveMode) return;
+
     if (cubeRef.current?.isCubeSolved()) {
       stopTimer();
       setControlsEnabled(false);
@@ -97,17 +109,23 @@ function App() {
         e.preventDefault();
         if (controlsEnabled && cubeRef.current) {
           if (shuffleFinished && !started) {
-            setStarted(true);
-            setIsRunning(true);
+            startTimer();
           }
+
           cubeRef.current.rotateFace(move);
+
+          setTimeout(() => {
+            if (solveMode && cubeRef.current?.isCubeSolved()) {
+              handleCheckSolved();
+            }
+          }, 350);
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [keybinds, controlsEnabled, shuffleFinished, started]);
+  }, [keybinds, controlsEnabled, shuffleFinished, started, solveMode]);
 
   const handleKeybindChange = (key, newMove) => {
     const updated = { ...keybinds, [key]: newMove };
@@ -122,14 +140,24 @@ function App() {
           {isSolved ? '✅ Solved!' : '❌ Not solved yet'}
         </div>
       )}
+
       <div className="button-panel">
-        <div className="title">{formatTime(time)}</div>
+        <div className="title">
+          <span className="invisible">{formatTime(time)}</span>
+        </div>
+
         <div className="button-row">
           <button onClick={shuffleCube}>Start</button>
+          <button onClick={startTimer}>Start Timer</button>
           <button onClick={stopTimer}>Stop</button>
-          <button onClick={resetTimer}>Reset</button>
-          <button onClick={() => cubeRef.current?.resetCube()}>Reset Cube</button>
-          {/* <button onClick={handleCheckSolved}>Check Cube</button> */}
+          <button
+            onClick={() => {
+              resetTimer();
+              cubeRef.current?.resetCube();
+            }}
+          >
+            Reset Cube
+          </button>
           <button onClick={() => setControlsEnabled((e) => !e)}>
             {controlsEnabled ? 'Disable Controls' : 'Enable Controls'}
           </button>

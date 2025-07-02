@@ -53,23 +53,14 @@ canvas {
 }
 
 button.pressed {
-  background-color: #777 !important;
+  background-color: #2f74bd !important;
   transform: scale(0.95);
-}
-
-.guide {
-  margin-top: 10px;
 }
 
 .guide h3 {
   margin-bottom: 4px;
   font-size: 16px;
-  font-family: 'League Spartan', sans-serif;
-}
-
-.guide li {
-  font-size: 13px;
-  line-height: 1.5;
+  min-width: 150px;
 }
 
 .title {
@@ -111,7 +102,7 @@ button.pressed {
 }
 
 .keybind-item select:disabled {
-  background-color: #333;
+  background-color: #0b4481;
   cursor: not-allowed;
 }
 

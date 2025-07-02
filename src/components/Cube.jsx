@@ -20,6 +20,8 @@ const Cube = forwardRef((props, ref) => {
 	const rotationStateRef = useRef(null);
 	const controlsRef = useRef();
 	const onMoveCallbackRef = useRef();
+	const cameraRef = useRef(); // Added to persist camera reference across renders
+	const rendererRef = useRef(); // Added to persist renderer reference across renders
 
 	const rotateFaceInternal = (move) => {
 		const moves = {
@@ -166,13 +168,15 @@ const Cube = forwardRef((props, ref) => {
 		sceneRef.current = scene;
 
 		const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+		camera.position.set(-20, 20, 30);
+		camera.lookAt(0, 0, 0);
+		cameraRef.current = camera;
+
 		const renderer = new THREE.WebGLRenderer({ antialias: true });
 		renderer.setClearColor(0xa7d1b2, 1.0);
 		renderer.setSize(width, height);
+		rendererRef.current = renderer;
 		element.appendChild(renderer.domElement);
-
-		camera.position.set(-20, 20, 30);
-		camera.lookAt(scene.position);
 
 		const controls = new OrbitControls(camera, renderer.domElement);
 		controls.enableZoom = false;
@@ -219,12 +223,29 @@ const Cube = forwardRef((props, ref) => {
 		};
 		animate();
 
+		const handleResize = () => {
+			if (!mountRef.current || !rendererRef.current || !cameraRef.current) return;
+			const width = mountRef.current.clientWidth;
+			const height = mountRef.current.clientHeight;
+
+			cameraRef.current.aspect = width / height;
+			cameraRef.current.updateProjectionMatrix();
+			rendererRef.current.setSize(width, height);
+
+            const yOffset = height < 600 ? 7 : height < 800 ? -5 : 0;
+	        cameraRef.current.lookAt(0, yOffset, 0);
+		};
+
+		window.addEventListener('resize', handleResize);
+
 		return () => {
 			cancelAnimationFrame(animationId);
 			element.removeChild(renderer.domElement);
+			window.removeEventListener('resize', handleResize);
 		};
 	}, []);
 
+	// ✅ Ensures the wrapper fills screen responsively
 	return <div ref={mountRef} style={{ width: '100%', height: '100vh' }} />;
 });
 

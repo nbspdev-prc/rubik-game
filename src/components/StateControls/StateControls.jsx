@@ -25,15 +25,21 @@ function StateControls({
         <span>{formatTime(time)}</span>
       </div>
 
-      {/* Button controls */}
-      <div className="button-row col-span-4">
-        <button onClick={shuffleCube}>Shuffle (Start)</button>
-        <button onClick={handleStartButton}>{getStartButtonLabel()}</button>
-        <button onClick={resetTimer}>Reset Time</button>
-        <button onClick={resetState}>Reset Cube</button>
-        <button onClick={() => setControlsEnabled((prev) => !prev)}>
-          {controlsEnabled ? 'Disable Controls' : 'Enable Controls'}
-        </button>
+      {/* Labeled Button Panel */}
+      <div className="state-controls col-span-4">
+        <div className="state-controls-header">
+          <h3>State Controls</h3>
+          <p className="state-controls-description">Control the timer and cube.</p>
+        </div>
+        <div className="button-row">
+          <button onClick={shuffleCube}>Shuffle (Start)</button>
+          <button onClick={handleStartButton}>{getStartButtonLabel()}</button>
+          <button onClick={resetTimer}>Reset Time</button>
+          <button onClick={resetState}>Reset Cube</button>
+          <button onClick={() => setControlsEnabled((prev) => !prev)}>
+            {controlsEnabled ? 'Disable Controls' : 'Enable Controls'}
+          </button>
+        </div>
       </div>
     </>
   );

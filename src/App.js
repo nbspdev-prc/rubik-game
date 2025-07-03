@@ -137,7 +137,7 @@ function App() {
       )}
 
       <div className="button-panel">
-        <div className="grid grid-cols-12 gap-4">
+        <div className="grid grid-cols-12 gap-4 items-center">
           <StateControls
             time={time}
             shuffleCube={shuffleCube}

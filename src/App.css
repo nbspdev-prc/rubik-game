@@ -1,4 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=League+Spartan:wght@700&display=swap');
+/* input.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body {
   margin: 0;
@@ -12,10 +16,6 @@ canvas {
 }
 
 .button-panel {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
   margin-top: 10px;
   margin-bottom: 10px;
   gap: 20px;
@@ -52,18 +52,12 @@ canvas {
   transform: scale(1.05);
 }
 
-button.pressed {
-  background-color: #2f74bd !important;
-  transform: scale(0.95);
-}
-
 .guide h3 {
   margin-bottom: 4px;
   font-size: 16px;
-  min-width: 150px;
 }
 
-.title {
+.timer {
   font-size: 4rem;
   font-weight: 900;
   color: white;

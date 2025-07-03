@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import Cube from './components/Cube';
 import './App.css';
 
@@ -51,14 +51,6 @@ function App() {
     setSolveMode(false);
   };
 
-  const startTimer = () => {
-    if (!isRunning) {
-      setIsRunning(true);
-      setStarted(true);
-      setSolveMode(true);
-    }
-  };
-
   const shuffleCube = () => {
     resetState();
     setControlsEnabled(false);
@@ -90,7 +82,7 @@ function App() {
     resetState();
   };
 
-  const handleCheckSolved = () => {
+  const handleCheckSolved = useCallback(() => {
     if (!solveMode) return;
 
     if (cubeRef.current?.isCubeSolved()) {
@@ -100,6 +92,26 @@ function App() {
     } else {
       setIsSolved(false);
     }
+  }, [solveMode]);
+
+  const handleStartButton = useCallback(() => {
+    if (isRunning) {
+      setIsRunning(false);
+    } else {
+      if (!solveMode) {
+        setTime(0);
+        setIsSolved(null);
+      }
+      setIsRunning(true);
+      setStarted(true);
+      setSolveMode(true);
+    }
+  }, [isRunning, solveMode]);
+
+  const getStartButtonLabel = () => {
+    if (isRunning) return 'Stop';
+    if (solveMode) return 'Continue';
+    return 'Start';
   };
 
   useEffect(() => {
@@ -109,7 +121,7 @@ function App() {
         e.preventDefault();
         if (controlsEnabled && cubeRef.current) {
           if (shuffleFinished && !started) {
-            startTimer();
+            handleStartButton();
           }
 
           cubeRef.current.rotateFace(move);
@@ -125,7 +137,16 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [keybinds, controlsEnabled, shuffleFinished, started, solveMode]);
+  }, [
+    keybinds,
+    controlsEnabled,
+    shuffleFinished,
+    started,
+    solveMode,
+    isRunning,
+    handleCheckSolved,
+    handleStartButton
+  ]);
 
   const handleKeybindChange = (key, newMove) => {
     const updated = { ...keybinds, [key]: newMove };
@@ -142,14 +163,22 @@ function App() {
       )}
 
       <div className="button-panel">
-        <div className="title">
-          <span className="invisible">{formatTime(time)}</span>
+        <div className="grid grid-cols-12">
+          <div className="col-span-4">Hello</div>
+          <div className="col-span-4">Hello</div>
+          <div className="col-span-4">Hello</div>
         </div>
 
+        {/* Time */}
+        <div className="timer">
+          <span>{formatTime(time)}</span>
+        </div>
+
+        {/* Button control */}
         <div className="button-row">
-          <button onClick={shuffleCube}>Start</button>
-          <button onClick={startTimer}>Start Timer</button>
-          <button onClick={stopTimer}>Stop</button>
+          <button onClick={shuffleCube}>Shuffle (Start)</button>
+          <button onClick={handleStartButton}>{getStartButtonLabel()}</button>
+          <button onClick={resetTimer}>Reset Time</button>
           <button
             onClick={() => {
               resetTimer();
@@ -162,7 +191,8 @@ function App() {
             {controlsEnabled ? 'Disable Controls' : 'Enable Controls'}
           </button>
         </div>
-
+        
+        {/* Keybinds */}
         <div className="guide">
           <h3>Keybinds</h3>
           <div className="keybinds-container">

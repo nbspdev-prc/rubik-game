@@ -20,8 +20,8 @@ const Cube = forwardRef((props, ref) => {
 	const rotationStateRef = useRef(null);
 	const controlsRef = useRef();
 	const onMoveCallbackRef = useRef();
-	const cameraRef = useRef(); // Added to persist camera reference across renders
-	const rendererRef = useRef(); // Added to persist renderer reference across renders
+	const cameraRef = useRef();
+	const rendererRef = useRef();
 
 	const rotateFaceInternal = (move) => {
 		const moves = {
@@ -244,8 +244,7 @@ const Cube = forwardRef((props, ref) => {
 			window.removeEventListener('resize', handleResize);
 		};
 	}, []);
-
-	// ✅ Ensures the wrapper fills screen responsively
+    
 	return <div ref={mountRef} style={{ width: '100%', height: '100vh' }} />;
 });
 

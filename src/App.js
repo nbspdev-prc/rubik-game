@@ -1,15 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import Cube from './components/Cube';
+import Keybinds from './components/Keybinds/Keybinds';
 import './App.css';
-
-const DEFAULT_KEYBINDS = {
-  Q: 'R', P: "R'",
-  W: 'L', O: "L'",
-  E: 'U', I: "U'",
-  R: 'D', U: "D'",
-  F: 'F', J: "F'",
-  G: 'B', H: "B'",
-};
+import { DEFAULT_KEYBINDS } from './components/Keybinds/Keybinds';
 
 function App() {
   const cubeRef = useRef();
@@ -20,6 +13,7 @@ function App() {
   const [controlsEnabled, setControlsEnabled] = useState(true);
   const [isSolved, setIsSolved] = useState(null);
   const [solveMode, setSolveMode] = useState(false);
+
   const [keybinds, setKeybinds] = useState(() => {
     const saved = localStorage.getItem('keybinds');
     return saved ? JSON.parse(saved) : DEFAULT_KEYBINDS;
@@ -114,24 +108,28 @@ function App() {
     return 'Start';
   };
 
+  const handleKeybindChange = (updatedKeybinds) => {
+    setKeybinds(updatedKeybinds);
+    localStorage.setItem('keybinds', JSON.stringify(updatedKeybinds));
+  };
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       const move = keybinds[e.key.toUpperCase()];
-      if (move) {
+      if (move && controlsEnabled && cubeRef.current) {
         e.preventDefault();
-        if (controlsEnabled && cubeRef.current) {
-          if (shuffleFinished && !started) {
-            handleStartButton();
-          }
 
-          cubeRef.current.rotateFace(move);
-
-          setTimeout(() => {
-            if (solveMode && cubeRef.current?.isCubeSolved()) {
-              handleCheckSolved();
-            }
-          }, 350);
+        if (shuffleFinished && !started) {
+          handleStartButton();
         }
+
+        cubeRef.current.rotateFace(move);
+
+        setTimeout(() => {
+          if (solveMode && cubeRef.current?.isCubeSolved()) {
+            handleCheckSolved();
+          }
+        }, 350);
       }
     };
 
@@ -148,12 +146,6 @@ function App() {
     handleStartButton
   ]);
 
-  const handleKeybindChange = (key, newMove) => {
-    const updated = { ...keybinds, [key]: newMove };
-    setKeybinds(updated);
-    localStorage.setItem('keybinds', JSON.stringify(updated));
-  };
-
   return (
     <div className="app-container">
       {isSolved !== null && (
@@ -163,54 +155,37 @@ function App() {
       )}
 
       <div className="button-panel">
-        <div className="grid grid-cols-12">
-          <div className="col-span-4">Hello</div>
-          <div className="col-span-4">Hello</div>
-          <div className="col-span-4">Hello</div>
-        </div>
-
-        {/* Time */}
-        <div className="timer">
-          <span>{formatTime(time)}</span>
-        </div>
-
-        {/* Button control */}
-        <div className="button-row">
-          <button onClick={shuffleCube}>Shuffle (Start)</button>
-          <button onClick={handleStartButton}>{getStartButtonLabel()}</button>
-          <button onClick={resetTimer}>Reset Time</button>
-          <button
-            onClick={() => {
-              resetTimer();
-              cubeRef.current?.resetCube();
-            }}
-          >
-            Reset Cube
-          </button>
-          <button onClick={() => setControlsEnabled((e) => !e)}>
-            {controlsEnabled ? 'Disable Controls' : 'Enable Controls'}
-          </button>
-        </div>
-        
-        {/* Keybinds */}
-        <div className="guide">
-          <h3>Keybinds</h3>
-          <div className="keybinds-container">
-            {Object.entries(keybinds).map(([key, move]) => (
-              <div key={key} className="keybind-item">
-                {key}:
-                <select
-                  value={move}
-                  onChange={(e) => handleKeybindChange(key, e.target.value)}
-                  disabled={!controlsEnabled}
-                >
-                  {Object.values(DEFAULT_KEYBINDS).map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              </div>
-            ))}
+        <div className="grid grid-cols-12 gap-4">
+          {/* Timer */}
+          <div className="timer col-span-2">
+            <span>{formatTime(time)}</span>
           </div>
+
+          {/* Button controls */}
+          <div className="button-row col-span-4">
+            <button onClick={shuffleCube}>Shuffle (Start)</button>
+            <button onClick={handleStartButton}>{getStartButtonLabel()}</button>
+            <button onClick={resetTimer}>Reset Time</button>
+            <button
+              onClick={() => {
+                resetTimer();
+                cubeRef.current?.resetCube();
+              }}
+            >
+              Reset Cube
+            </button>
+            <button onClick={() => setControlsEnabled((prev) => !prev)}>
+              {controlsEnabled ? 'Disable Controls' : 'Enable Controls'}
+            </button>
+          </div>
+
+          {/* Editable Keybinds */}
+          <Keybinds
+            keybinds={keybinds}
+            onKeybindChange={handleKeybindChange}
+            controlsEnabled={controlsEnabled}
+            setControlsEnabled={setControlsEnabled}
+          />
         </div>
       </div>
 

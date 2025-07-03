@@ -22,7 +22,6 @@
   margin-top: 1rem;
 }
 
-/* ===== Keybind Tile ===== */
 .keybind-item {
   display: flex;
   align-items: center;
@@ -44,6 +43,7 @@
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
+
 .keybind-item:hover {
   background-color: #3a6ca5;
 }
@@ -71,6 +71,10 @@
   color: #e5f1ea;
   margin: 0;
   line-height: 1.2;
+}
+
+.keybind-item:focus {
+  outline: none;
 }
 
 /* ===== Reset Button (Red) ===== */

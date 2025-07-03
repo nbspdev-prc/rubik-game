@@ -231,9 +231,6 @@ const Cube = forwardRef((props, ref) => {
 			cameraRef.current.aspect = width / height;
 			cameraRef.current.updateProjectionMatrix();
 			rendererRef.current.setSize(width, height);
-
-            const yOffset = height < 600 ? 7 : height < 800 ? -5 : 0;
-	        cameraRef.current.lookAt(0, yOffset, 0);
 		};
 
 		window.addEventListener('resize', handleResize);

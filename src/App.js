@@ -1,8 +1,11 @@
+// src/App.js
+
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import Cube from './components/Cube';
 import Keybinds from './components/Keybinds/Keybinds';
 import './App.css';
 import { DEFAULT_KEYBINDS } from './components/Keybinds/Keybinds';
+import StateControls from './components/StateControls/StateControls';
 
 function App() {
   const cubeRef = useRef();
@@ -14,11 +17,6 @@ function App() {
   const [isSolved, setIsSolved] = useState(null);
   const [solveMode, setSolveMode] = useState(false);
 
-  const [keybinds, setKeybinds] = useState(() => {
-    const saved = localStorage.getItem('keybinds');
-    return saved ? JSON.parse(saved) : DEFAULT_KEYBINDS;
-  });
-
   useEffect(() => {
     let timer;
     if (isRunning) {
@@ -28,13 +26,6 @@ function App() {
     }
     return () => clearInterval(timer);
   }, [isRunning]);
-
-  const formatTime = (ms) => {
-    const minutes = Math.floor(ms / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000);
-    const milliseconds = Math.floor((ms % 1000) / 10);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
-  };
 
   const resetState = () => {
     setTime(0);
@@ -67,9 +58,7 @@ function App() {
     });
   };
 
-  const stopTimer = () => {
-    setIsRunning(false);
-  };
+  const stopTimer = () => setIsRunning(false);
 
   const resetTimer = () => {
     stopTimer();
@@ -78,7 +67,6 @@ function App() {
 
   const handleCheckSolved = useCallback(() => {
     if (!solveMode) return;
-
     if (cubeRef.current?.isCubeSolved()) {
       stopTimer();
       setControlsEnabled(false);
@@ -108,14 +96,9 @@ function App() {
     return 'Start';
   };
 
-  const handleKeybindChange = (updatedKeybinds) => {
-    setKeybinds(updatedKeybinds);
-    localStorage.setItem('keybinds', JSON.stringify(updatedKeybinds));
-  };
-
   useEffect(() => {
     const handleKeyDown = (e) => {
-      const move = keybinds[e.key.toUpperCase()];
+      const move = JSON.parse(localStorage.getItem('keybinds') || '{}')[e.key.toUpperCase()];
       if (move && controlsEnabled && cubeRef.current) {
         e.preventDefault();
 
@@ -136,7 +119,6 @@ function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
-    keybinds,
     controlsEnabled,
     shuffleFinished,
     started,
@@ -156,33 +138,20 @@ function App() {
 
       <div className="button-panel">
         <div className="grid grid-cols-12 gap-4">
-          {/* Timer */}
-          <div className="timer col-span-2">
-            <span>{formatTime(time)}</span>
-          </div>
-
-          {/* Button controls */}
-          <div className="button-row col-span-4">
-            <button onClick={shuffleCube}>Shuffle (Start)</button>
-            <button onClick={handleStartButton}>{getStartButtonLabel()}</button>
-            <button onClick={resetTimer}>Reset Time</button>
-            <button
-              onClick={() => {
-                resetTimer();
-                cubeRef.current?.resetCube();
-              }}
-            >
-              Reset Cube
-            </button>
-            <button onClick={() => setControlsEnabled((prev) => !prev)}>
-              {controlsEnabled ? 'Disable Controls' : 'Enable Controls'}
-            </button>
-          </div>
-
-          {/* Editable Keybinds */}
+          <StateControls
+            time={time}
+            shuffleCube={shuffleCube}
+            handleStartButton={handleStartButton}
+            getStartButtonLabel={getStartButtonLabel}
+            resetTimer={resetTimer}
+            resetState={() => {
+              resetTimer();
+              cubeRef.current?.resetCube();
+            }}
+            controlsEnabled={controlsEnabled}
+            setControlsEnabled={setControlsEnabled}
+          />
           <Keybinds
-            keybinds={keybinds}
-            onKeybindChange={handleKeybindChange}
             controlsEnabled={controlsEnabled}
             setControlsEnabled={setControlsEnabled}
           />

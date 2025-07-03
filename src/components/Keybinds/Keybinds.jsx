@@ -1,3 +1,5 @@
+// src/components/Keybinds/Keybinds.js
+
 import React, { useState, useEffect, useCallback } from 'react';
 import './Keybinds.css';
 
@@ -19,9 +21,19 @@ const DEFAULT_KEYBINDS = {
   G: 'B', H: "B'",
 };
 
-const Keybinds = ({ keybinds, onKeybindChange, controlsEnabled, setControlsEnabled }) => {
+const Keybinds = ({ controlsEnabled, setControlsEnabled }) => {
+  const [keybinds, setKeybinds] = useState(() => {
+    const saved = localStorage.getItem('keybinds');
+    return saved ? JSON.parse(saved) : DEFAULT_KEYBINDS;
+  });
+
   const [editingMove, setEditingMove] = useState(null);
   const [wasControlsEnabled, setWasControlsEnabled] = useState(true);
+
+  const handleKeybindChange = (updatedKeybinds) => {
+    setKeybinds(updatedKeybinds);
+    localStorage.setItem('keybinds', JSON.stringify(updatedKeybinds));
+  };
 
   const finishEditing = useCallback(() => {
     setEditingMove(null);
@@ -44,12 +56,12 @@ const Keybinds = ({ keybinds, onKeybindChange, controlsEnabled, setControlsEnabl
     if (oldKey) delete updated[oldKey];
     updated[newKey] = editingMove;
 
-    onKeybindChange(updated);
+    handleKeybindChange(updated);
     finishEditing();
-  }, [editingMove, keybinds, onKeybindChange, finishEditing]);
+  }, [editingMove, keybinds, finishEditing]);
 
   const handleReset = () => {
-    onKeybindChange({ ...DEFAULT_KEYBINDS });
+    handleKeybindChange({ ...DEFAULT_KEYBINDS });
     finishEditing();
   };
 

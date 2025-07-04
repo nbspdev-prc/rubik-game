@@ -80,8 +80,8 @@ const Keybinds = ({ controlsEnabled, setControlsEnabled }) => {
   return (
     <div className="guide col-span-3">
       <div className="guide-header">
-        <div className="guide-title">
-          <h3>Keybinds</h3>
+        <div>
+          <h3 className="guide-title">Keybinds</h3>
           <p className="guide-description">Keybinds settings</p>
         </div>
         <button

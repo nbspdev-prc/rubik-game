@@ -28,7 +28,7 @@ function StateControls({
       {/* Labeled Button Panel */}
       <div className="state-controls col-span-2">
         <div className="state-controls-title">
-          <h3>State Controls</h3>
+          <h3 className="state-controls-header">State Controls</h3>
           <p className="state-controls-description">Timer and cube controllers</p>
         </div>
         <div className="button-panel">

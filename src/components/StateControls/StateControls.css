@@ -25,7 +25,7 @@
 
 /* ===== Button Panel ===== */
 .button-panel {
-    margin-top: 1.3rem;
+    margin-top: 1rem;
 }
 
 .button-panel button {
@@ -53,8 +53,7 @@
 }
 
 /* ===== Description Text ===== */
-
-.state-controls-header h3 {
+.state-controls-header {
     font-size: 1.25rem;
     font-weight: 700;
     color: white;
@@ -64,4 +63,5 @@
     font-size: 0.875rem;
     color: #e5f1ea;
     line-height: 1.2;
+    font-weight:400;
 }

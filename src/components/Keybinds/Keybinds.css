@@ -44,12 +44,6 @@
 }
 
 .guide-title {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.guide-title h3 {
     font-size: 1.25rem;
     font-weight: 700;
     color: white;

@@ -6,10 +6,8 @@
 
 /* ===== Base Styles ===== */
 body {
-  margin: 0;
   overflow: hidden;
   background-color: #78b187;
-  font-family: 'Segoe UI', sans-serif;
 }
 
 canvas {
@@ -18,17 +16,7 @@ canvas {
 
 .header-panel {
     margin: 2vh 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-    font-family: inherit;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: white;
-    letter-spacing: 0.05rem;
     padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
 }
 
 /* ===== Status Message ===== */

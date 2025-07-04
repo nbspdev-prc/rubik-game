@@ -1,11 +1,13 @@
 // src/App.js
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import Cube from './components/Cube';
+import StateControls from './components/StateControls/StateControls';
 import Keybinds from './components/Keybinds/Keybinds';
+import Leaderboard from './components/Leaderboard/Leaderboard';
+import Cube from './components/Cube';
 import './App.css';
 import { DEFAULT_KEYBINDS } from './components/Keybinds/Keybinds';
-import StateControls from './components/StateControls/StateControls';
+import { getLeaderboard, addScore } from './services/LeaderboardService';
 
 function App() {
   const cubeRef = useRef();
@@ -16,6 +18,9 @@ function App() {
   const [controlsEnabled, setControlsEnabled] = useState(true);
   const [isSolved, setIsSolved] = useState(null);
   const [solveMode, setSolveMode] = useState(false);
+
+  // New: leaderboard state
+  const [leaderboardData, setLeaderboardData] = useState(getLeaderboard());
 
   useEffect(() => {
     let timer;
@@ -67,14 +72,22 @@ function App() {
 
   const handleCheckSolved = useCallback(() => {
     if (!solveMode) return;
+
     if (cubeRef.current?.isCubeSolved()) {
       stopTimer();
       setControlsEnabled(false);
       setIsSolved(true);
+
+      // Add score here (name is placeholder)
+      const name = prompt("🎉 You solved it! Enter your name:") || "Anonymous";
+      const timeInSeconds = (time / 1000).toFixed(2);
+
+      const updated = addScore(name, Number(timeInSeconds));
+      setLeaderboardData(updated);
     } else {
       setIsSolved(false);
     }
-  }, [solveMode]);
+  }, [solveMode, time]);
 
   const handleStartButton = useCallback(() => {
     if (isRunning) {
@@ -138,7 +151,6 @@ function App() {
 
       <div className="header-panel">
         <div className="grid grid-cols-12 gap-4">
-          {/* Timer and StateControls */}
           <StateControls
             time={time}
             shuffleCube={shuffleCube}
@@ -152,12 +164,14 @@ function App() {
             controlsEnabled={controlsEnabled}
             setControlsEnabled={setControlsEnabled}
           />
-          
-          {/* Keybinds */}
+
           <Keybinds
             controlsEnabled={controlsEnabled}
             setControlsEnabled={setControlsEnabled}
           />
+
+          {/* Pass leaderboard data to the Leaderboard */}
+          <Leaderboard leaderboardData={leaderboardData} />
         </div>
       </div>
 

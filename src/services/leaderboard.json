@@ -1,0 +1,17 @@
+[
+  { "name": "Alice", "time": 12.34 },
+  { "name": "Bob", "time": 13.21 },
+  { "name": "Charlie", "time": 14.56 },
+  { "name": "David", "time": 15.78 },
+  { "name": "Eve", "time": 16.89 },
+  { "name": "Frank", "time": 17.02 },
+  { "name": "Grace", "time": 17.45 },
+  { "name": "Heidi", "time": 18.76 },
+  { "name": "Ivan", "time": 19.10 },
+  { "name": "Judy", "time": 20.22 },
+  { "name": "Ken", "time": 21.35 },
+  { "name": "Liam", "time": 22.18 },
+  { "name": "Mallory", "time": 23.05 },
+  { "name": "Niaj", "time": 24.40 },
+  { "name": "Olivia", "time": 25.00 }
+]

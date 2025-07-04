@@ -167,7 +167,7 @@ const Cube = forwardRef((props, ref) => {
 		const scene = new THREE.Scene();
 		sceneRef.current = scene;
 
-		const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+		const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 1000);
 		camera.position.set(-20, 20, 30);
 		camera.lookAt(0, 0, 0);
 		cameraRef.current = camera;
@@ -242,7 +242,7 @@ const Cube = forwardRef((props, ref) => {
 		};
 	}, []);
     
-	return <div ref={mountRef} style={{ width: '100%', height: '100vh' }} />;
+	return <div ref={mountRef} style={{ width: '100%', height: '80vh' }} />;
 });
 
 export default Cube;

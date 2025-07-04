@@ -1,4 +1,4 @@
-# Rubik-SpeedCube
+# SpeedCube
 
 <p align="center">
   <img src="public/logo512.png" alt="Rubik-SpeedCube Logo" width="120"/>

@@ -138,6 +138,7 @@ function App() {
 
       <div className="header-panel">
         <div className="grid grid-cols-12 gap-4">
+          {/* Timer and StateControls */}
           <StateControls
             time={time}
             shuffleCube={shuffleCube}
@@ -151,6 +152,8 @@ function App() {
             controlsEnabled={controlsEnabled}
             setControlsEnabled={setControlsEnabled}
           />
+          
+          {/* Keybinds */}
           <Keybinds
             controlsEnabled={controlsEnabled}
             setControlsEnabled={setControlsEnabled}

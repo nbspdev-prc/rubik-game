@@ -78,11 +78,11 @@ const Keybinds = ({ controlsEnabled, setControlsEnabled }) => {
   }, [handleKeyDown]);
 
   return (
-    <div className="guide col-span-6">
+    <div className="guide col-span-3">
       <div className="guide-header">
         <div className="guide-title">
           <h3>Keybinds</h3>
-          <p className="guide-description">Click a move to reassign its key.</p>
+          <p className="guide-description">Keybinds settings</p>
         </div>
         <button
           className="keybind-edit-btn reset-btn"
@@ -94,29 +94,31 @@ const Keybinds = ({ controlsEnabled, setControlsEnabled }) => {
       </div>
 
       <div className="keybinds-container">
-        {DEFAULT_ORDERED_MOVES.map((move) => {
-          const assignedKey = Object.entries(keybinds).find(([, val]) => val === move)?.[0];
-          const isEditing = editingMove === move;
+        <div className="grid grid-cols-4 gap-1.5">
+          {DEFAULT_ORDERED_MOVES.map((move) => {
+            const assignedKey = Object.entries(keybinds).find(([, val]) => val === move)?.[0];
+            const isEditing = editingMove === move;
 
-          const label = isEditing
-            ? `${move}: ...`
-            : `${move}: ${assignedKey || 'Unassigned'}`;
+            const label = isEditing
+              ? `${move}: ...`
+              : `${move}: ${assignedKey || 'Unassigned'}`;
 
-          return (
-            <div
-              key={move}
-              className={`keybind-item${isEditing ? ' editing' : ''}`}
-              onClick={() => startEditing(move)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') startEditing(move);
-              }}
-            >
-              {label}
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={move}
+                className={`keybind-item${isEditing ? ' editing' : ''}`}
+                onClick={() => startEditing(move)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') startEditing(move);
+                }}
+              >
+                {label}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

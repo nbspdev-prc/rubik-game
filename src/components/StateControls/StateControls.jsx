@@ -26,17 +26,17 @@ function StateControls({
       </div>
 
       {/* Labeled Button Panel */}
-      <div className="state-controls col-span-4">
+      <div className="state-controls col-span-2">
         <div className="state-controls-title">
           <h3>State Controls</h3>
-          <p className="state-controls-description">Control the timer and cube.</p>
+          <p className="state-controls-description">Timer and cube controllers</p>
         </div>
         <div className="button-panel">
-          <div className="grid grid-cols-2 gap-1">
+          <div className="grid grid-cols-2 gap-1.5">
             <button onClick={handleStartButton}>{getStartButtonLabel()}</button>
             <button onClick={resetTimer}>Reset Time</button>
 
-            <button onClick={shuffleCube}>Shuffle (Start)</button>
+            <button onClick={shuffleCube}>Mix (Start)</button>
             <button onClick={resetState}>Reset Cube</button>
 
             <button
